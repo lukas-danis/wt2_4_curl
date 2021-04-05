@@ -1,0 +1,19 @@
+.wd70{
+    width: 70%;
+    margin: auto;
+}
+.graph-style{
+    padding-top: 50px;
+    height: 370px;
+    width: 100%;
+}
+.col-sm-6 {
+    text-align: Center
+}
+.col-sm-12 {
+    text-align: Center
+}
+
+.display{
+    border: solid 1px black;
+}
