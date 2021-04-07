@@ -17,3 +17,9 @@
 .display{
     border: solid 1px black;
 }
+
+body{
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url("lol.jpg");
+}
