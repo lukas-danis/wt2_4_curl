@@ -51,7 +51,7 @@ $dataPoints = array();
     <div class="wd70">
         <table id="myTable" class="display">
             <?php
-            echo "<thead><tr><th class='nosort'>Meno</th>";
+            echo "<thead><tr><th>Meno</th>";
             foreach ($filesPaths as $fileIndex => $filePath) {
                 $filePath = substr($filePath, 1);
                 $filePath = substr($filePath, 0, -4);
@@ -87,8 +87,15 @@ $dataPoints = array();
                     $arr = str_getcsv($line, "\t");
                     if ($index > 0 && $arr[0]) {
                         $namesPart = explode(" ", $arr[0]);
-                        $name = $namesPart[1] . " " . $namesPart[0];
-                        $action = $arr[1];
+                        $reverted = new ArrayIterator(array_reverse($namesPart));
+                        $name = '';
+                        foreach ($reverted as $word) {
+                            $name .= $word;
+                            $name .= " ";
+                        }
+                        $name = trim($name);
+                        $actionPart = explode(" ", $arr[1]);
+                        $action = $actionPart[0];
                         if (strlen($arr[2]) > 20) {
                             $parsed = substr($arr[2], 0, -2);
                             $parsed = trim($parsed);
@@ -108,7 +115,7 @@ $dataPoints = array();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 array_push($dataPoints, array("x" => $fileIndex, "label" => "Prednáška " . $fileIndex + 1, "y" => $result["pocet"]));
             }
-            echo "<th class='nosort'>Počet účastí</th><th class='nosort'>Spolu minút</th>";
+            echo "<th>Počet účastí</th><th>Spolu minút</th>";
             echo "</tr></thead>";
 
             //TODO      nacitame vsetky "lectures" z DB a pre kazde jedno ID vyhladame vsetkych studentov (cez foreach)  // DONE
@@ -145,18 +152,25 @@ $dataPoints = array();
                     $stmt->execute();
                     $allPersonRows = $stmt->fetchAll();
                     $totalTime = 0;
+                    $left = false;
                     if ($allPersonRows) {
+                        $lastAction = "";
                         $attendCount++;
-                        $left = false;
                         foreach ($allPersonRows as $row) {
                             if ($row["action"] == "Joined") {
                                 $timest = strtotime($row["timestamp"]);
                                 $totalTime -= $timest;
                                 $left = false;
+                                if($lastAction == "Joined"){
+                                    $totalTime += $timest;
+                                }else{
+                                    $lastAction = "Joined";
+                                }
                             } else if ($row["action"] == "Left") {
                                 $timest = strtotime($row["timestamp"]);
                                 $totalTime += $timest;
                                 $left = true;
+                                $lastAction = "Left";
                             }
                         }
                         if ($left == false) {
@@ -170,7 +184,11 @@ $dataPoints = array();
                         $trasnfName .= $word;
                         $trasnfName .= "_";
                     }
-                    echo "<td><a href='javascript:void(0)' class='btn get_id' data-id=" . $oneLecture["id"] . " data-usname=" . $trasnfName . " data-toggle='modal' data-target='#myModal'>" . round($totalTime / 60, 0) . "</a></td>";
+                    if ($left == false && $totalTime != 0) {
+                        echo "<td><a href='javascript:void(0)' class='btn get_id btn-warning' data-id=" . $oneLecture["id"] . " data-usname=" . $trasnfName . " data-toggle='modal' data-target='#myModal'>" . round($totalTime / 60, 0) . "</a></td>";
+                    }else{
+                        echo "<td><a href='javascript:void(0)' class='btn get_id' data-id=" . $oneLecture["id"] . " data-usname=" . $trasnfName . " data-toggle='modal' data-target='#myModal'>" . round($totalTime / 60, 0) . "</a></td>";
+                    }
                 }
                 echo "<td>" . $attendCount . "</td>";
                 echo "<td>" . $sumTime . "</td>";

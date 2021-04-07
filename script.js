@@ -5,11 +5,17 @@ $(document).ready(function() {
         "scrollCollapse": true,
         "paging":         false,
         "bInfo" : false,
-        "order": [[ tableLength-1, "desc" ], [ tableLength-2, 'desc' ],[ 0, 'asc' ]],
-        "columnDefs": [{
+        "order": [[ 0, 'asc' ]],
+        "columnDefs": [
+            {
+            targets: [ tableLength-1 ],
+            order: [[ tableLength-1, "desc" ], [ tableLength-2, 'desc' ],[ 0, 'asc' ]],
+        },
+        {
             "orderable": false,
             "targets": 'nosort',
-        }],
+        }
+    ],
     });
 
     $(".get_id").click(function(){
