@@ -213,8 +213,7 @@ $dataPoints = array();
             </div>
         </div>
     </div>
-</body>
-<script>
+    <script>
     window.onload = function() {
         var chart = new CanvasJS.Chart("chartContainer", {
             animationEnabled: true,
@@ -231,5 +230,7 @@ $dataPoints = array();
         chart.render();
     }
 </script>
+</body>
+
 
 </html>
